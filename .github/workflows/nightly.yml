@@ -14,7 +14,7 @@ jobs:
     name: Nightly CI
     uses: YOUR_ORG/goship/.github/workflows/ci-pipeline.yml@main
     with:
-      go-version: '1.23'
+      go-version: '1.26'
       binary-name: myapp
       main-package: './cmd/server'
       # Full test suite with race detector
