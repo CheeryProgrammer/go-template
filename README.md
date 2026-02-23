@@ -1,5 +1,6 @@
 # go-template
 
+[![CI](https://github.com/CheeryProgrammer/go-template/actions/workflows/main-push.yml/badge.svg)](https://github.com/CheeryProgrammer/go-template/actions/workflows/main-push.yml)
 [![Go](https://img.shields.io/github/go-mod/go-version/CheeryProgrammer/go-template)](go.mod)
 [![License](https://img.shields.io/badge/license-MIT-blue)](#)
 
