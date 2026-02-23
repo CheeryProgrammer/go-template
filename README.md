@@ -4,9 +4,16 @@
 [![Go](https://img.shields.io/github/go-mod/go-version/CheeryProgrammer/go-template)](go.mod)
 [![License](https://img.shields.io/badge/license-MIT-blue)](#)
 
-GitHub template for Go services. Click **"Use this template"** to generate a
-new repository with CI/CD, Docker, linting, and database migrations already
-wired up via [goship](https://github.com/CheeryProgrammer/goship) reusable workflows.
+A good starting point for pet projects and prototypes. Click **"Use this
+template"** and skip the boring setup — CI/CD pipelines, Docker, linting rules,
+and deployment scripts are already configured.
+
+Pull requests run lint and tests automatically. Merging to main builds a Docker
+image and deploys to staging. Releases go to production. All CI/CD logic lives
+in [goship](https://github.com/CheeryProgrammer/goship) reusable workflows —
+configure once, reuse across all your repos.
+
+**You write the code. The template handles the rest.**
 
 ---
 
