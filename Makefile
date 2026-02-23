@@ -16,7 +16,7 @@ BUILD_DIR      ?= ./bin
 DOCKER_IMAGE   ?= ghcr.io/your-org/$(BINARY_NAME)
 DOCKER_TAG     ?= dev
 MIGRATIONS_DIR ?= ./migrations
-DB_URL         ?= postgres://user:pass@localhost:5432/db?sslmode=disable
+DB_URL         ?= postgres://app:app@localhost:5432/app?sslmode=disable
 
 GOLANGCI_LINT_VERSION ?= v2.10.1
 SQLC_VERSION          ?= v1.27.0
