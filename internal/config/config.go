@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Config holds all runtime configuration for the application.
 type Config struct {
 	HTTPAddr        string
 	ReadTimeout     time.Duration
@@ -15,6 +16,7 @@ type Config struct {
 	DatabaseURL string
 }
 
+// Load reads configuration from environment variables, falling back to defaults.
 func Load() Config {
 	return Config{
 		HTTPAddr:        getEnv("HTTP_ADDR", ":8080"),

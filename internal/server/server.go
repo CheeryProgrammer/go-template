@@ -12,12 +12,15 @@ import (
 	"github.com/YOUR_ORG/myapp/internal/store"
 )
 
+// Server wraps the HTTP server and manages its lifecycle.
 type Server struct {
 	cfg  config.Config
 	http *http.Server
 	stop func()
 }
 
+// New creates a Server from cfg, optionally connecting to PostgreSQL if
+// cfg.DatabaseURL is set.
 func New(cfg config.Config) (*Server, error) {
 	s := &Server{cfg: cfg, stop: func() {}}
 
@@ -44,6 +47,8 @@ func New(cfg config.Config) (*Server, error) {
 	return s, nil
 }
 
+// Run starts the HTTP server and blocks until ctx is cancelled or a fatal error
+// occurs. It performs a graceful shutdown before returning.
 func (s *Server) Run(ctx context.Context) error {
 	errCh := make(chan error, 1)
 	go func() {
@@ -61,6 +66,9 @@ func (s *Server) Run(ctx context.Context) error {
 		shutdownCtx, cancel := context.WithTimeout(context.Background(), s.cfg.ShutdownTimeout)
 		defer cancel()
 		defer s.stop()
-		return s.http.Shutdown(shutdownCtx)
+		if err := s.http.Shutdown(shutdownCtx); err != nil {
+			return fmt.Errorf("shutdown: %w", err)
+		}
+		return nil
 	}
 }

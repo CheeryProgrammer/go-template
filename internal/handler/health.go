@@ -27,6 +27,6 @@ func health(st store.Store) http.HandlerFunc {
 		if resp["status"] != "ok" {
 			w.WriteHeader(http.StatusServiceUnavailable)
 		}
-		json.NewEncoder(w).Encode(resp) //nolint:errcheck
+		json.NewEncoder(w).Encode(resp) //nolint:errcheck,gosec
 	}
 }

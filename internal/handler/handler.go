@@ -9,6 +9,7 @@ import (
 	"github.com/YOUR_ORG/myapp/internal/store"
 )
 
+// New returns an HTTP handler with all application routes registered.
 func New(st store.Store) http.Handler {
 	r := chi.NewRouter()
 
