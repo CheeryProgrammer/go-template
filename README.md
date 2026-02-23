@@ -156,8 +156,137 @@ make migrate-create NAME=add_users_table
 Set `DATABASE_URL` to connect to postgres. Leave it empty to start the app
 without a database — `GET /health` will return `"database": "disabled"`.
 
-To add queries, define methods on the `Store` interface in
-`internal/store/store.go` and implement them in `internal/store/postgres.go`.
+---
+
+## Migrations
+
+The template uses [golang-migrate](https://github.com/golang-migrate/migrate).
+Each migration is two SQL files: `up` (apply) and `down` (rollback).
+
+### Adding a migration
+
+```bash
+make migrate-create NAME=create_users_table
+```
+
+Creates two files:
+
+```
+migrations/
+  000001_create_users_table.up.sql
+  000001_create_users_table.down.sql
+```
+
+Fill them in:
+
+```sql
+-- 000001_create_users_table.up.sql
+CREATE TABLE users (
+    id         BIGSERIAL PRIMARY KEY,
+    email      TEXT      NOT NULL UNIQUE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+```
+
+```sql
+-- 000001_create_users_table.down.sql
+DROP TABLE users;
+```
+
+### Running migrations locally
+
+```bash
+make dev-up        # start postgres (first time)
+make migrate-up    # apply all pending migrations
+make migrate-status  # check current version
+make migrate-down  # roll back the last migration
+```
+
+### In CI/CD
+
+Migrations run automatically before every deploy when `run-migrations: true`
+is set in the workflow. The database URL is taken from the
+`STAGING_DATABASE_URL` / `PROD_DATABASE_URL` secret.
+
+### Rules
+
+- **Never edit a migration file after it has been applied** — create a new one instead
+- **Always write `down.sql`** — even if it's just `DROP TABLE`
+- **One change per migration** — easier to review and roll back
+- **Commit together with code** — the migration and the code that uses it go in the same PR
+
+---
+
+## Queries with sqlc (optional)
+
+[sqlc](https://sqlc.dev) generates type-safe Go code from SQL queries.
+Instead of writing `rows.Scan(...)` by hand, you write SQL and get Go for free.
+
+### Setup
+
+```bash
+go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+```
+
+Create `sqlc.yaml` in the repo root:
+
+```yaml
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries: "internal/store/queries/"
+    schema:  "migrations/"
+    gen:
+      go:
+        package:       "store"
+        out:           "internal/store"
+        sql_package:   "pgx/v5"
+```
+
+### Workflow
+
+**1. Write a query in `internal/store/queries/users.sql`:**
+
+```sql
+-- name: GetUser :one
+SELECT id, email, created_at FROM users WHERE id = $1;
+
+-- name: ListUsers :many
+SELECT id, email, created_at FROM users ORDER BY created_at DESC;
+
+-- name: CreateUser :one
+INSERT INTO users (email) VALUES ($1) RETURNING *;
+```
+
+**2. Generate Go code:**
+
+```bash
+make sqlc   # runs: sqlc generate
+```
+
+sqlc creates `internal/store/users.sql.go` with fully typed functions — no
+`Scan`, no string casting, compiler catches wrong argument types.
+
+**3. Use the generated code:**
+
+```go
+user, err := store.GetUser(ctx, userID)
+users, err := store.ListUsers(ctx)
+user, err := store.CreateUser(ctx, "alice@example.com")
+```
+
+**4. Enable CI check** so generated files are always up to date.
+
+In `pr-checks.yml` and `main-push.yml`, add `sqlc-enabled: true`:
+
+```yaml
+uses: CheeryProgrammer/goship/.github/workflows/ci-pipeline.yml@main
+with:
+  sqlc-enabled: true
+  # ...
+```
+
+CI will fail if someone edits a query without regenerating the Go code.
 
 ---
 
