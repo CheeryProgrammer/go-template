@@ -33,7 +33,8 @@ migrations/                      # SQL migration files (golang-migrate)
   nightly.yml                    # full suite nightly + Slack alert on failure
 
 Dockerfile                       # multi-stage scratch image (Go 1.26)
-docker-compose.yml               # local dev (postgres with volume)
+docker-compose.yml               # production (uploaded to server on deploy)
+docker-compose.dev.yml           # local dev (postgres with volume)
 docker-compose.test.yml          # integration test services (postgres + redis)
 Makefile                         # build, test, lint, docker, migrate targets
 .golangci.yml                    # golangci-lint ruleset
@@ -114,8 +115,8 @@ git push -u origin init
 ## Local development
 
 ```bash
-# Start postgres
-docker compose up -d
+# Start local postgres
+make dev-up
 
 # Copy and edit env
 cp .env.example .env

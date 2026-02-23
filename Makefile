@@ -4,6 +4,7 @@
         lint fmt vet tidy generate check \
         sqlc sqlc-check \
         test test-short test-integration test-coverage \
+        dev-up dev-down \
         docker-build docker-run docker-push \
         migrate-up migrate-down migrate-status migrate-create
 
@@ -111,6 +112,12 @@ docker-build: ## Build Docker image
 		--build-arg COMMIT_SHA=$(shell git rev-parse --short HEAD) \
 		-t $(DOCKER_IMAGE):$(DOCKER_TAG) \
 		.
+
+dev-up: ## Start local dev services (postgres)
+	docker compose -f docker-compose.dev.yml up -d
+
+dev-down: ## Stop local dev services
+	docker compose -f docker-compose.dev.yml down
 
 docker-run: ## Run the image locally on port 8080
 	docker run --rm -it \

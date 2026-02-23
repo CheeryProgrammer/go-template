@@ -1,30 +1,16 @@
-# Local development
+# Production — this file is uploaded to the server on every deploy.
+# Secrets (DATABASE_URL, etc.) live in .env on the server, not in the repo.
 services:
-  postgres:
-    image: postgres:17-alpine
-    environment:
-      POSTGRES_USER: app
-      POSTGRES_PASSWORD: app
-      POSTGRES_DB: app
+  app:
+    image: ${IMAGE:-ghcr.io/your-org/your-service:latest}
+    restart: unless-stopped
     ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - "8080:8080"
+    env_file:
+      - .env
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U app -d app"]
-      interval: 5s
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
+      interval: 30s
       timeout: 5s
-      retries: 10
-
-  # Uncomment to run the app inside Docker alongside postgres
-  # app:
-  #   build: .
-  #   env_file: .env
-  #   ports:
-  #     - "8080:8080"
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-
-volumes:
-  postgres_data:
+      retries: 3
+      start_period: 10s
