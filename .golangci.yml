@@ -17,8 +17,6 @@ linters:
     - unused          # detect unused code
 
     # Style / best practices
-    - gofmt           # formatting
-    - goimports       # import ordering
     - revive          # drop-in replacement for golint
     - misspell        # spelling mistakes
 
@@ -69,6 +67,11 @@ linters:
       - text: "^(func init)"
         linters:
           - gochecknoinits
+
+formatters:
+  enable:
+    - gofmt           # formatting
+    - goimports       # import ordering
 
 issues:
   max-same-issues: 5
