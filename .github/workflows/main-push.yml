@@ -30,6 +30,7 @@ jobs:
   deploy-staging:
     name: Deploy → Staging
     needs: ci
+    if: vars.DEPLOY_ENABLED == 'true'
     uses: CheeryProgrammer/goship/.github/workflows/cd-pipeline.yml@main
     with:
       environment: staging
