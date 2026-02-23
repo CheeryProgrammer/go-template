@@ -10,7 +10,6 @@ linters:
   enable:
     # Correctness
     - errcheck        # check for unchecked errors
-    - gosimple        # simplification suggestions
     - govet           # vet checks
     - ineffassign     # detect unused variable assignments
     - staticcheck     # static analysis
