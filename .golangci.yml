@@ -36,37 +36,38 @@ linters:
     - wrapcheck       # ensure errors from external packages are wrapped
     - errorlint       # find misuses of errors package
 
-linters-settings:
-  cyclop:
-    max-complexity: 15
+  settings:
+    cyclop:
+      max-complexity: 15
 
-  gocognit:
-    min-complexity: 20
+    gocognit:
+      min-complexity: 20
 
-  revive:
-    rules:
-      - name: exported
-        arguments:
-          - disableStutteringCheck
+    revive:
+      rules:
+        - name: exported
+          arguments:
+            - disableStutteringCheck
 
-  gosec:
-    excludes:
-      - G601   # implicit memory aliasing (fixed in Go 1.22+)
+    gosec:
+      excludes:
+        - G601   # implicit memory aliasing (fixed in Go 1.22+)
 
-  wrapcheck:
-    ignorePackageGlobs:
-      - "github.com/YOUR_ORG/*"   # adjust to your module prefix
+    wrapcheck:
+      ignorePackageGlobs:
+        - "github.com/YOUR_ORG/*"   # adjust to your module prefix
 
 issues:
-  exclude-rules:
-    # Relax some rules for test files
-    - path: "_test\\.go"
-      linters:
-        - errcheck
-        - gosec
-        - wrapcheck
-    # Allow init() functions
-    - text: "^(func init)"
-      linters:
-        - gochecknoinits
   max-same-issues: 5
+  exclusions:
+    rules:
+      # Relax some rules for test files
+      - path: "_test\\.go"
+        linters:
+          - errcheck
+          - gosec
+          - wrapcheck
+      # Allow init() functions
+      - text: "^(func init)"
+        linters:
+          - gochecknoinits
