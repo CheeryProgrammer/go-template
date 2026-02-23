@@ -54,11 +54,9 @@ linters:
         - G601   # implicit memory aliasing (fixed in Go 1.22+)
 
     wrapcheck:
-      ignorePackageGlobs:
+      ignore-package-globs:
         - "github.com/YOUR_ORG/*"   # adjust to your module prefix
 
-issues:
-  max-same-issues: 5
   exclusions:
     rules:
       # Relax some rules for test files
@@ -71,3 +69,6 @@ issues:
       - text: "^(func init)"
         linters:
           - gochecknoinits
+
+issues:
+  max-same-issues: 5
