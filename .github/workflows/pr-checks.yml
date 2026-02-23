@@ -1,6 +1,6 @@
 # ────────────────────────────────────────────────────────────────────────────
 # Triggered on every pull request to main.
-# Replace "YOUR_ORG/goship" with your actual org/repo name.
+# Replace "CheeryProgrammer/goship" with your actual org/repo name.
 # ────────────────────────────────────────────────────────────────────────────
 name: PR Checks
 
@@ -17,7 +17,7 @@ concurrency:
 jobs:
   ci:
     name: CI
-    uses: YOUR_ORG/goship/.github/workflows/ci-pipeline.yml@main
+    uses: CheeryProgrammer/goship/.github/workflows/ci-pipeline.yml@main
     with:
       go-version: '1.26'
       binary-name: myapp

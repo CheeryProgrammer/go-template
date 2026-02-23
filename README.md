@@ -1,8 +1,11 @@
 # go-template
 
+[![Go](https://img.shields.io/github/go-mod/go-version/CheeryProgrammer/go-template)](go.mod)
+[![License](https://img.shields.io/badge/license-MIT-blue)](#)
+
 GitHub template for Go services. Click **"Use this template"** to generate a
 new repository with CI/CD, Docker, linting, and database migrations already
-wired up via [goship](https://github.com/YOUR_ORG/goship) reusable workflows.
+wired up via [goship](https://github.com/CheeryProgrammer/goship) reusable workflows.
 
 ---
 
@@ -130,6 +133,6 @@ To add queries, define methods on the `Store` interface in
 
 ## Reusable workflows
 
-All CI/CD logic lives in [goship](https://github.com/YOUR_ORG/goship).
+All CI/CD logic lives in [goship](https://github.com/CheeryProgrammer/goship).
 See that repository for the full list of inputs, outputs, and secrets for
 each workflow.
