@@ -90,7 +90,7 @@ DOCKER_IMAGE ?= ghcr.io/your-org/your-service
 | Name | Type | Used by |
 |------|------|---------|
 | `CODECOV_TOKEN` | Secret | pr-checks, nightly |
-| `INTEGRATION_ENV` | Secret | pr-checks, nightly — [what is this?](https://github.com/CheeryProgrammer/goship#integration-test) |
+| `INTEGRATION_ENV` | Secret | pr-checks, nightly — [what is this?](https://github.com/CheeryProgrammer/goship#integration-testyml--integration-tests) |
 | `STAGING_SSH_PRIVATE_KEY` | Secret | main-push |
 | `STAGING_DATABASE_URL` | Secret | main-push |
 | `PROD_SSH_PRIVATE_KEY` | Secret | release |
