@@ -32,7 +32,7 @@ migrations/                      # SQL migration files (golang-migrate)
   release.yml                    # CI + GitHub Release + production deploy on semver tag
   nightly.yml                    # full suite nightly + Slack alert on failure
 
-Dockerfile                       # multi-stage scratch image (Go 1.24)
+Dockerfile                       # multi-stage scratch image (Go 1.26)
 docker-compose.yml               # local dev (postgres with volume)
 docker-compose.test.yml          # integration test services (postgres + redis)
 Makefile                         # build, test, lint, docker, migrate targets
@@ -42,49 +42,54 @@ Makefile                         # build, test, lint, docker, migrate targets
 
 ---
 
-## Setup
+## Get Started
 
-### 1. Rename the module
+### 1. Create a repository from this template
 
-Replace `YOUR_ORG/myapp` with your actual module path everywhere:
-
-```bash
-find . -type f \( -name '*.go' -o -name 'go.mod' \) \
-  | xargs sed -i 's|github.com/YOUR_ORG/myapp|github.com/myorg/myservice|g'
-```
-
-### 2. Replace the goship placeholder
-
-Replace `YOUR_ORG/goship` in `.github/workflows/` with the actual location
-of your goship instance:
+Click **"Use this template"** → **"Create a new repository"** on GitHub,
+then clone your new repo:
 
 ```bash
-grep -rl 'YOUR_ORG/goship' .github/workflows/ \
-  | xargs sed -i 's|YOUR_ORG/goship|myorg/goship|g'
+git clone git@github.com:your-org/your-service.git
+cd your-service
 ```
 
-### 3. Install dependencies
+### 2. Rename the module
+
+Replace the `YOUR_ORG/myapp` placeholder with your actual module path
+everywhere — Go files, `go.mod`, and the lint config:
+
+```bash
+# macOS
+find . -type f \( -name '*.go' -o -name 'go.mod' -o -name '*.yml' \) \
+  | xargs sed -i '' 's|github.com/YOUR_ORG/myapp|github.com/your-org/your-service|g'
+
+# Linux
+find . -type f \( -name '*.go' -o -name 'go.mod' -o -name '*.yml' \) \
+  | xargs sed -i 's|github.com/YOUR_ORG/myapp|github.com/your-org/your-service|g'
+```
+
+Then regenerate the lockfile:
 
 ```bash
 go mod tidy
 ```
 
-### 4. Adjust project settings
+### 3. Adjust project settings
 
-Edit the top of `Makefile`:
+Edit the variables at the top of `Makefile`:
 
 ```makefile
-BINARY_NAME  ?= myservice
-MAIN_PACKAGE ?= ./cmd/server
-DOCKER_IMAGE ?= ghcr.io/myorg/myservice
+BINARY_NAME  ?= your-service
+DOCKER_IMAGE ?= ghcr.io/your-org/your-service
 ```
 
-### 5. Add secrets & variables
+### 4. Add GitHub secrets & variables
 
 | Name | Type | Used by |
 |------|------|---------|
-| `CODECOV_TOKEN` | Secret | pr-checks, main-push, nightly |
-| `INTEGRATION_ENV` | Secret | pr-checks, main-push, nightly |
+| `CODECOV_TOKEN` | Secret | pr-checks, nightly |
+| `INTEGRATION_ENV` | Secret | pr-checks, nightly — [what is this?](https://github.com/CheeryProgrammer/goship#integration-test) |
 | `STAGING_SSH_PRIVATE_KEY` | Secret | main-push |
 | `STAGING_DATABASE_URL` | Secret | main-push |
 | `PROD_SSH_PRIVATE_KEY` | Secret | release |
@@ -93,9 +98,16 @@ DOCKER_IMAGE ?= ghcr.io/myorg/myservice
 | `STAGING_SSH_KNOWN_HOSTS` | Variable | main-push |
 | `PROD_SSH_KNOWN_HOSTS` | Variable | release |
 
-### 6. Push
+### 5. Open a pull request
 
-CI runs automatically on the first pull request.
+Push a branch and open a PR — `pr-checks` runs CI automatically.
+
+```bash
+git checkout -b init
+git add -A
+git commit -m "init: rename module and configure project"
+git push -u origin init
+```
 
 ---
 
@@ -124,7 +136,7 @@ make migrate-create NAME=add_users_table
 ## Database (optional)
 
 Set `DATABASE_URL` to connect to postgres. Leave it empty to start the app
-without a database — only `GET /health` returns `"database": "disabled"`.
+without a database — `GET /health` will return `"database": "disabled"`.
 
 To add queries, define methods on the `Store` interface in
 `internal/store/store.go` and implement them in `internal/store/postgres.go`.
@@ -134,5 +146,4 @@ To add queries, define methods on the `Store` interface in
 ## Reusable workflows
 
 All CI/CD logic lives in [goship](https://github.com/CheeryProgrammer/goship).
-See that repository for the full list of inputs, outputs, and secrets for
-each workflow.
+See that repository for the full list of inputs, outputs, and secrets.
