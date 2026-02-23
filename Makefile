@@ -17,7 +17,7 @@ DOCKER_TAG     ?= dev
 MIGRATIONS_DIR ?= ./migrations
 DB_URL         ?= postgres://user:pass@localhost:5432/db?sslmode=disable
 
-GOLANGCI_LINT_VERSION ?= v1.62.0
+GOLANGCI_LINT_VERSION ?= v2.10.1
 SQLC_VERSION          ?= v1.27.0
 
 # ── Help ───────────────────────────────────────────────────────────────────
