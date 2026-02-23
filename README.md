@@ -33,11 +33,11 @@ migrations/                      # SQL migration files (golang-migrate)
   nightly.yml                    # full suite nightly + Slack alert on failure
 
 Dockerfile                       # multi-stage scratch image (Go 1.26)
-docker-compose.yml               # production (uploaded to server on deploy)
+docker-compose.yml               # production compose file (uploaded to server on deploy)
 docker-compose.dev.yml           # local dev (postgres with volume)
 docker-compose.test.yml          # integration test services (postgres + redis)
 Makefile                         # build, test, lint, docker, migrate targets
-.golangci.yml                    # golangci-lint ruleset
+.golangci.yml                    # golangci-lint v2 ruleset
 .env.example                     # env var reference
 ```
 
@@ -87,17 +87,33 @@ DOCKER_IMAGE ?= ghcr.io/your-org/your-service
 
 ### 4. Add GitHub secrets & variables
 
-| Name | Type | Used by |
-|------|------|---------|
-| `CODECOV_TOKEN` | Secret | pr-checks, nightly |
-| `INTEGRATION_ENV` | Secret | pr-checks, nightly — [what is this?](https://github.com/CheeryProgrammer/goship#integration-testyml--integration-tests) |
-| `STAGING_SSH_PRIVATE_KEY` | Secret | main-push |
-| `STAGING_DATABASE_URL` | Secret | main-push |
-| `PROD_SSH_PRIVATE_KEY` | Secret | release |
-| `PROD_DATABASE_URL` | Secret | release |
-| `SLACK_WEBHOOK_URL` | Secret | nightly |
-| `STAGING_SSH_KNOWN_HOSTS` | Variable | main-push |
-| `PROD_SSH_KNOWN_HOSTS` | Variable | release |
+CI runs immediately with no configuration. Secrets are only needed to enable
+optional features.
+
+**CI secrets** (all optional):
+
+| Name | Used by | Description |
+|------|---------|-------------|
+| `CODECOV_TOKEN` | pr-checks, nightly | Codecov upload token |
+| `INTEGRATION_ENV` | pr-checks, nightly | Newline-separated `KEY=VALUE` env vars for integration tests — [details](https://github.com/CheeryProgrammer/goship#integration-testyml--integration-tests) |
+| `SLACK_WEBHOOK_URL` | nightly | Slack incoming webhook for failure alerts |
+
+**CD secrets & variables** (required to enable deploys):
+
+| Name | Type | Used by | Description |
+|------|------|---------|-------------|
+| `DEPLOY_ENABLED` | Variable | main-push, release | Set to `true` to enable the deploy job |
+| `STAGING_SSH_KNOWN_HOSTS` | Variable | main-push | `known_hosts` entry for staging server |
+| `PROD_SSH_KNOWN_HOSTS` | Variable | release | `known_hosts` entry for production server |
+| `STAGING_SSH_PRIVATE_KEY` | Secret | main-push | SSH deploy key for staging |
+| `STAGING_DATABASE_URL` | Secret | main-push | Full postgres URL for staging migrations |
+| `PROD_SSH_PRIVATE_KEY` | Secret | release | SSH deploy key for production |
+| `PROD_DATABASE_URL` | Secret | release | Full postgres URL for production migrations |
+
+> **Deploy is skipped by default.** The deploy job in `main-push.yml` and
+> `release.yml` only runs when `DEPLOY_ENABLED` is set to `true`. This means
+> CI works out of the box after creating the repo from the template, without
+> needing any secrets configured upfront.
 
 ### 5. Open a pull request
 
