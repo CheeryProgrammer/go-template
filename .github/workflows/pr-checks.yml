@@ -24,8 +24,11 @@ jobs:
       binary-name: myapp
       main-package: './cmd/server'
       test-packages: './...'
-      coverage-threshold: 70
-      upload-coverage: true
+      # Template ships with no tests — set to 0 so the threshold never blocks a fresh project.
+      # Raise this once you have real test coverage.
+      coverage-threshold: 0
+      # Set to true and add CODECOV_TOKEN secret to enable coverage uploads.
+      upload-coverage: false
       run-integration-tests: true
       integration-test-packages: './tests/integration/...'
       integration-test-tags: integration

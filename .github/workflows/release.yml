@@ -1,8 +1,5 @@
-# ────────────────────────────────────────────────────────────────────────────
 # Triggered when a semver tag is pushed (e.g. v1.2.3).
 # Runs CI, creates a GitHub Release, then deploys to production.
-# Replace "CheeryProgrammer/goship" with your actual org/repo name.
-# ────────────────────────────────────────────────────────────────────────────
 name: Release
 
 on:
@@ -53,13 +50,11 @@ jobs:
       dockerfile: Dockerfile
       platforms: linux/amd64,linux/arm64
       run-migrations: true
-      migration-tool: golang-migrate
-      migrations-dir: migrations
-      ssh-host: prod.example.com
-      ssh-user: deploy
+      ssh-host: ${{ vars.PROD_SSH_HOST }}
+      ssh-user: ${{ vars.PROD_SSH_USER }}
       compose-file-local: docker-compose.yml
       compose-file-remote: ~/app/docker-compose.yml
-      service-name: api
+      service-name: app
       ssh-known-hosts: ${{ vars.PROD_SSH_KNOWN_HOSTS }}
     secrets:
       REGISTRY_USERNAME: ${{ github.actor }}

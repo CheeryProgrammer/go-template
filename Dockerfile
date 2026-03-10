@@ -26,14 +26,13 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
     ./cmd/server
 
 # ── Stage 2: Runtime ──────────────────────────────────────────────────────────
-FROM scratch
+FROM alpine:3.21
 
-# Import CA certificates and timezone data from builder
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
+# ca-certificates: TLS for outbound requests; wget: Docker healthcheck
+RUN apk add --no-cache ca-certificates wget tzdata
 
-# Non-root user (scratch doesn't have useradd; pre-bake the UID)
-USER 65534:65534
+# nobody (65534) already exists in Alpine — use it as the non-root user
+USER nobody:nobody
 
 WORKDIR /app
 
