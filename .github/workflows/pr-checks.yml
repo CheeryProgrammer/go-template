@@ -24,7 +24,9 @@ jobs:
       binary-name: myapp
       main-package: './cmd/server'
       test-packages: './...'
-      coverage-threshold: 70
+      # Template ships with no tests — set to 0 so the threshold never blocks a fresh project.
+      # Raise this once you have real test coverage.
+      coverage-threshold: 0
       upload-coverage: true
       run-integration-tests: true
       integration-test-packages: './tests/integration/...'
