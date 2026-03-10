@@ -31,7 +31,7 @@ jobs:
   notify-on-failure:
     name: Notify on failure
     needs: ci
-    if: failure()
+    if: failure() && secrets.SLACK_WEBHOOK_URL != ''
     runs-on: ubuntu-latest
     steps:
       - name: Send Slack notification

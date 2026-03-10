@@ -1,20 +1,25 @@
-# ────────────────────────────────────────────────────────────────────────────
-# Triggered on every push to main: runs CI then deploys to staging.
-# Replace "CheeryProgrammer/goship" with your actual org/repo name.
-# ────────────────────────────────────────────────────────────────────────────
+# Triggered on every push to main (auto-deploy to staging)
+# or manually via workflow_dispatch to deploy any branch to staging.
 name: Main — CI + Deploy Staging
 
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      skip_ci:
+        description: 'Skip CI and deploy immediately (use only if CI already passed)'
+        type: boolean
+        default: false
 
 concurrency:
-  group: main-push
+  group: staging-deploy
   cancel-in-progress: false   # never cancel a deploy mid-flight
 
 jobs:
   ci:
     name: CI
+    if: ${{ !inputs.skip_ci }}
     uses: CheeryProgrammer/goship/.github/workflows/ci-pipeline.yml@main
     with:
       go-version: '1.26'
@@ -29,8 +34,11 @@ jobs:
 
   deploy-staging:
     name: Deploy → Staging
-    needs: ci
-    if: vars.DEPLOY_ENABLED == 'true'
+    needs: [ci]
+    if: |
+      always() &&
+      (needs.ci.result == 'success' || needs.ci.result == 'skipped') &&
+      (vars.STAGING_DEPLOY_ENABLED == 'true' || github.event_name == 'workflow_dispatch')
     uses: CheeryProgrammer/goship/.github/workflows/cd-pipeline.yml@main
     with:
       environment: staging
@@ -38,13 +46,11 @@ jobs:
       dockerfile: Dockerfile
       platforms: linux/amd64
       run-migrations: true
-      migration-tool: golang-migrate
-      migrations-dir: migrations
-      ssh-host: staging.example.com
-      ssh-user: deploy
+      ssh-host: ${{ vars.STAGING_SSH_HOST }}
+      ssh-user: ${{ vars.STAGING_SSH_USER }}
       compose-file-local: docker-compose.yml
       compose-file-remote: ~/app/docker-compose.yml
-      service-name: api
+      service-name: app
       ssh-known-hosts: ${{ vars.STAGING_SSH_KNOWN_HOSTS }}
     secrets:
       REGISTRY_USERNAME: ${{ github.actor }}
