@@ -33,15 +33,18 @@ jobs:
   notify-on-failure:
     name: Notify on failure
     needs: ci
-    # secrets context is not available in job-level if; check it at step level instead
     if: failure()
     runs-on: ubuntu-latest
+    # secrets context is not allowed in if expressions; expose it as env so
+    # the step can gate on env.SLACK_WEBHOOK_URL (env is allowed in step if).
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
       - name: Send Slack notification
-        if: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
+        if: ${{ env.SLACK_WEBHOOK_URL != '' }}
         uses: slackapi/slack-github-action@v2
         with:
-          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook: ${{ env.SLACK_WEBHOOK_URL }}
           webhook-type: incoming-webhook
           payload: |
             {
